@@ -1,0 +1,93 @@
+#### Définition des paramètres linguistiques et de clavier ####
+
+# Choisir la langue française pour l'installation
+d-i debian-installer/language string fr
+
+# Choisir la localisation (France)
+d-i debian-installer/country string FR
+d-i debian-installer/locale string fr_FR.UTF-8
+
+# Choisir la disposition du clavier en français
+d-i keyboard-configuration/xkb-keymap select fr
+
+#### Configuration du réseau ####
+
+# Définir un nom d'hôte
+d-i netcfg/get_hostname string WEBSERVER
+
+# Définir une adresse IP statique
+d-i netcfg/disable_dhcp boolean true
+d-i netcfg/get_ipaddress string 192.168.0.51
+d-i netcfg/get_netmask string 255.255.255.0
+d-i netcfg/get_gateway string 192.168.0.253
+d-i netcfg/get_nameservers string 8.8.8.8
+
+# Ne pas configurer de domaine spécifique
+d-i netcfg/get_domain string
+
+#### Configuration de l'horloge et du fuseau horaire ####
+
+# Définir le fuseau horaire (Paris)
+d-i time/zone string Europe/Paris
+
+#### Configuration de l'utilisateur root ####
+
+# Activer l'utilisateur root
+d-i passwd/root-login boolean true
+
+# Définir le mot de passe root
+d-i passwd/root-password password azerty
+d-i passwd/root-password-again password azerty
+
+#### Création de l'utilisateur ####
+
+# Nom d'utilisateur "webadmin" avec mot de passe "azerty"
+d-i passwd/user-fullname string Web Admin
+d-i passwd/username string webadmin
+d-i passwd/user-password password azerty
+d-i passwd/user-password-again password azerty
+
+#### Partitionnement automatique ####
+
+# Utiliser tout le disque avec le partitionnement standard recommandé
+d-i partman-auto/disk string /dev/sda
+d-i partman-auto/method string regular
+d-i partman-lvm/device_remove_lvm boolean true
+d-i partman-md/device_remove_md boolean true
+d-i partman-lvm/confirm boolean true
+d-i partman-auto/choose_recipe select atomic
+d-i partman/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+
+#### Configuration du miroir ####
+
+# Utiliser le miroir Debian pour la France
+d-i mirror/country string manual
+d-i mirror/http/hostname string http.fr.debian.org
+d-i mirror/http/directory string /debian
+d-i mirror/http/proxy string
+
+#### Installation des paquets ####
+
+# Ne pas installer d'interface graphique
+tasksel tasksel/first multiselect standard, ssh-server
+
+# Installer les paquets supplémentaires : SSH, Apache2, PHP, MariaDB
+d-i pkgsel/include string openssh-server apache2 php libapache2-mod-php mariadb-server php-mysql
+
+#### Réglages de l'installateur ####
+
+# Eviter les écrans interactifs pour les paquets (comme les interfaces configurables)
+d-i debconf debconf/frontend select Noninteractive
+
+#### Mises à jour automatiques ####
+
+# Choisir de ne pas installer automatiquement les mises à jour
+d-i pkgsel/update-policy select none
+
+#### Fin de l'installation ####
+
+# Éviter de redémarrer automatiquement après l'installation
+d-i finish-install/reboot_in_progress note
